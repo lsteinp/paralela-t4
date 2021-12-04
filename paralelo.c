@@ -3,7 +3,7 @@
 #include "mpi.h"
 
 #define DEBUG 1            // comentar esta linha quando for medir tempo
-#define tam_vetor 40      // trabalho final com o valores 10000, 100000, 1000000
+#define tam_vetor 1000000      // trabalho final com o valores 10000, 100000, 1000000
 #define array_cut_percentage 10 // porcetagem de corte dos arrays
 
 void bs(int n, int * vetor, int start)
@@ -47,21 +47,8 @@ int main(int argc, char** argv)
     int sorted[n];
     for (i = 0; i < delta; i++) /* init array with worst case for sorting */
         vetor[i] = (delta*(n-id))-i;
-    // #ifdef DEBUG
-    //     printf("\nunsorted Array, id %d: ", id);
-    //     for (i=0 ; i<delta+cutSize; i++)              /* print unsorted array */
-    //         printf("[%03d] ", vetor[i]);
-    //     printf("\n");
-    // #endif
     while(!pronto){
-    // while(x < 5){
         bs(delta, vetor, 0);
-        // #ifdef DEBUG
-        //     printf("\nsorted Array, id %d: ", id);
-        //     for (i=0 ; i<delta; i++)              /* print unsorted array */
-        //         printf("[%03d] ", vetor[i]);
-        //     printf("\n");
-        // #endif
 
         // verifica parada
         if(id < n-1){ // se não for np-1, mando o meu maior elemento para a direita
@@ -76,7 +63,6 @@ int main(int argc, char** argv)
         } else {
             leftSorted = 0;
         }
-        // printf("\nid: %d, maxLeft: %d, leftSorted: %D ", id, maxLeft, leftSorted);
         sorted[id] = leftSorted;
         for(i = 0; i < n; i++){
             // int sorted = leftSorted;
@@ -89,42 +75,25 @@ int main(int argc, char** argv)
             }
         }
         if(!pronto) {// troco valores para convergir
-            // printf("\nid: %d, nao temo pronto", id);
             if(id != 0){ // se não for o 0, mando os menores valores do meu vetor para a esquerda
                 MPI_Send(&vetor, cutSize, MPI_INT, id-1, 1, MPI_COMM_WORLD);
             }
             if(id < n-1) {// se não for np-1, recebo os menores valores da direita
                 MPI_Recv(&vetor[delta], cutSize, MPI_INT, id+1, 1, MPI_COMM_WORLD, &Status);
-                // printf("\n new Array, id %d: ", id);
-                // for (i=0 ; i<delta+cutSize; i++)              /* print unsorted array */
-                //     printf("[%03d] ", vetor[i]);
-                // printf("\n");
+
                 bs(delta+cutSize, vetor, delta-cutSize); // ordeno estes valores com a parte mais alta do meu vetor local
 
-                // printf("\n semiordenado, id %d: ", id);
-                // for (i=0 ; i<delta+cutSize; i++)              /* print unsorted array */
-                //     printf("[%03d] ", vetor[i]);
-                // printf("\n");
-
-                // printf("\nid: %d, sending: %d ", id, delta-cutSize);
                 MPI_Send(&vetor[delta], cutSize, MPI_INT, id+1, 2, MPI_COMM_WORLD); // devolvo os valores que recebi para a direita
             }
 
             if(id != 0) { // se não for o 0, recebo de volta os maiores valores da esquerda
                 MPI_Recv(&vetor, cutSize, MPI_INT, id-1, 2, MPI_COMM_WORLD, &Status);
             }
-            // printf("\nsorted Array, id %d: ", id);
-            // for (i=0 ; i<delta+cutSize; i++)              /* print unsorted array */
-            //     printf("[%03d] ", vetor[i]);
-            // printf("\n");
-            x++;
         }
-        // printf("\nid: %d, pronto: %d", id, pronto);
     }
 
-    // printf("\n id: %d, cabo ", id);
     printf("\nsorted Array, id %d: ", id);
-    for (i=0 ; i<delta; i++)              /* print unsorted array */
+    for (i=0 ; i<delta; i++)
         printf("[%03d] ", vetor[i]);
     printf("\n");
     MPI_Finalize();
