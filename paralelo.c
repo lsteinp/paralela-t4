@@ -4,7 +4,7 @@
 
 // #define DEBUG 1            // comentar esta linha quando for medir tempo
 #define tam_vetor 1000000      // trabalho final com o valores 10000, 100000, 1000000
-#define array_cut_percentage 100 // porcetagem de corte dos arrays
+#define array_cut_percentage 30 // porcetagem de corte dos arrays
 
 void bs(int n, int * vetor, int start)
 {
