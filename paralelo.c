@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "mpi.h"
 
-#define DEBUG 1            // comentar esta linha quando for medir tempo
+// #define DEBUG 1            // comentar esta linha quando for medir tempo
 #define tam_vetor 1000000      // trabalho final com o valores 10000, 100000, 1000000
 #define array_cut_percentage 10 // porcetagem de corte dos arrays
 
@@ -92,10 +92,21 @@ int main(int argc, char** argv)
         }
     }
 
-    printf("\nsorted Array, id %d: ", id);
-    for (i=0 ; i<delta; i++)
-        printf("[%03d] ", vetor[i]);
-    printf("\n");
+    // printf("\nsorted Array, id %d: ", id);
+    // for (i=0 ; i<delta; i++)
+    //     printf("[%03d] ", vetor[i]);
+    // printf("\n");
+    if(id == 0) {// sou raiz, mostrar o vetor e o tempo de execução
+
+        #ifdef DEBUG
+            printf("\nsorted Array: ");
+            for (i=0 ; i<tam; i++)
+                printf("[%03d] ", vetor_auxiliar[i]);
+        #endif
+        time2 = MPI_Wtime();
+        printf("\nsize: %d", tam);
+        printf("\ntime: %f\n", time2-time1);
+    }
     MPI_Finalize();
     return 0;
 }
