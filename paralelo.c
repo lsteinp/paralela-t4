@@ -40,6 +40,8 @@ int main(int argc, char** argv)
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &id);
     MPI_Comm_size(MPI_COMM_WORLD, &n);
+    time1 = MPI_Wtime();
+
 
     int delta = tam_vetor/n;
     int cutSize = delta*array_cut_percentage/100;
